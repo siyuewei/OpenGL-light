@@ -78,7 +78,7 @@ void main()
 
     //加入自发光会影响光照的观察，因为太亮了。乘0.01基本看不见自发光了。
 	vec3 emission = texture(material.emission,vec2(TexCoords.x,TexCoords.y + emission_move)).rgb;
-    result += emission * 0.01;
+    result += emission;
 
     FragColor = vec4(result ,1.0f);
 }

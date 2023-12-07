@@ -54,12 +54,15 @@
     <None Include="multiple_light.fs" />
     <None Include="frame.vs" />
     <None Include="frame.fs" />
+    <None Include="transparent.vs" />
+    <None Include="transparent.fs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertices_p.txt" />
     <Text Include="vertices_pn.txt" />
     <Text Include="vertices_pnt.txt" />
     <Text Include="10_box.txt" />
+    <Text Include="window.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="container2.png">
@@ -69,6 +72,9 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="matrix.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="blending_transparent_window.png">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

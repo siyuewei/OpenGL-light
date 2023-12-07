@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -82,18 +83,38 @@ return -1;
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
     glEnable(GL_STENCIL_TEST);
     //glStencilFunc(GL_NOTEQUAL, 1, 0xff);
-
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //2.Shader
     Shader colorCubeShader = Shader("multiple_light.vs", "multiple_light.fs");
     Shader lightShader = Shader("light.vs", "light.fs");
     Shader frameShader = Shader("frame.vs", "frame.fs");
+    Shader transportShader = Shader("transparent.vs", "transparent.fs");
 
     //3.data
+    // positions of the point lights
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f,  0.2f,  2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3(0.0f,  0.0f, -3.0f)
+    };
+    // transparent window locations
+// --------------------------------
+    std::vector<glm::vec3> windows
+    {
+        glm::vec3(-1.5f, 0.0f, -0.48f),
+        glm::vec3(1.5f, 0.0f, 0.51f),
+        glm::vec3(0.0f, 0.0f, 0.7f),
+        glm::vec3(-0.3f, 0.0f, -2.3f),
+        glm::vec3(0.5f, 0.0f, -0.6f)
+    };
+    // ---------------------- cube -------------------------
     std::vector<float> vertices = ReadVerticesFromFile("10_box.txt");
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
@@ -108,13 +129,7 @@ return -1;
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    // positions of the point lights
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3(0.7f,  0.2f,  2.0f),
-        glm::vec3(2.3f, -3.3f, -4.0f),
-        glm::vec3(-4.0f,  2.0f, -12.0f),
-        glm::vec3(0.0f,  0.0f, -3.0f)
-    };
+
     unsigned int VBO, colorCubeVAO;
     glGenVertexArrays(1, &colorCubeVAO);
     glGenBuffers(1, &VBO);
@@ -135,14 +150,35 @@ return -1;
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+    // ------------------------ window ----------------------------
+    //绘制窗户的数据
+    std::vector<float> vertices_window = ReadVerticesFromFile("window.txt");
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices_window.size() * sizeof(float), &vertices_window[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
+    //Texture
     unsigned int diffuseMap = loadTexture("container2.png");
     unsigned int specularMap = loadTexture("container2_specular.png");
     unsigned int emissionMap = loadTexture("matrix.jpg");
+    unsigned int tranparentMap = loadTexture("blending_transparent_window.png");
 
     colorCubeShader.use();
     colorCubeShader.setInt("material.diffuse", 0);
     colorCubeShader.setInt("material.specular", 1);
     colorCubeShader.setInt("material.emission", 2);
+
+    transportShader.use();
+    transportShader.setInt("texture1", 3);
 
     //4.render loop
     while (!glfwWindowShouldClose(window)) {
@@ -316,6 +352,36 @@ return -1;
             model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
             lightShader.setMatrix4fv("model",1,model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+
+        // ---------------- windows (from furthest to nearest) --------------------------
+        transportShader.use();
+        view = glm::mat4(1.0f);
+        projection = glm::mat4(1.0f);
+        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        transportShader.setMatrix4fv("view", 1, view);
+        transportShader.setMatrix4fv("projection", 1, projection);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xff);
+        glStencilMask(0x00);
+        
+        glBindVertexArray(transparentVAO);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, tranparentMap);
+        std::map<float, glm::vec3> sorted;
+        for (unsigned int i = 0; i < windows.size(); i++)
+        {
+            float distance = glm::length(camera.getPosition() - windows[i]);
+            sorted[distance] = windows[i];
+        }
+        for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, it->second);
+            transportShader.setMatrix4fv("model",1, model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
         glfwSwapBuffers(window);

@@ -151,14 +151,18 @@
     <None Include="light.vs" />
     <None Include="multiple_light.fs" />
     <None Include="multiple_light.vs" />
+    <None Include="transparent.fs" />
+    <None Include="transparent.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="10_box.txt" />
     <Text Include="vertices_pnt.txt" />
     <Text Include="vertices_p.txt" />
     <Text Include="vertices_pn.txt" />
+    <Text Include="window.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="blending_transparent_window.png" />
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="matrix.jpg" />
