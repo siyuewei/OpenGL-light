@@ -81,10 +81,17 @@ return -1;
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_STENCIL_TEST);
+    //glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     //2.Shader
     Shader colorCubeShader = Shader("multiple_light.vs", "multiple_light.fs");
     Shader lightShader = Shader("light.vs", "light.fs");
+    Shader frameShader = Shader("frame.vs", "frame.fs");
 
     //3.data
     std::vector<float> vertices = ReadVerticesFromFile("10_box.txt");
@@ -150,13 +157,17 @@ return -1;
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //clear前把mask设置回0xff!!!!!!!
+        glStencilMask(0xff);
+        //glClearStencil(0);也需要把掩码设置成0xff
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
-        //draw colorCube
+        //---------------------- colorCube ------------------------------------
         colorCubeShader.use();
 
         //file:colorCube.fs/vs
@@ -209,6 +220,7 @@ return -1;
         colorCubeShader.setFloatVec3("pointLights[3].position", pointLightPositions[3]);
         colorCubeShader.setFloatVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
         colorCubeShader.setFloatVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+
         colorCubeShader.setFloatVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
         colorCubeShader.setFloat("pointLights[3].constant", 1.0f);
         colorCubeShader.setFloat("pointLights[3].linear", 0.09f);
@@ -241,6 +253,9 @@ return -1;
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, emissionMap);
 
+        glStencilFunc(GL_ALWAYS, 1, 0xff);
+        glStencilMask(0xff);
+
         glBindVertexArray(colorCubeVAO);
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
@@ -251,7 +266,30 @@ return -1;
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        //draw light
+        // ------------------ frame ---------------------
+        frameShader.use();
+        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        frameShader.setMatrix4fv("view", 1, view);
+        frameShader.setMatrix4fv("projection", 1, projection);
+
+        glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+        glStencilMask(0x00);
+        //glDisable(GL_DEPTH_TEST);
+
+        float scale = 1.1f;
+        for (unsigned int i = 0; i < 10; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::scale(model, glm::vec3(scale, scale, scale));
+            float angle = 20.0f * i;
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
+            frameShader.setMatrix4fv("model", 1, model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        //glEnable(GL_DEPTH_TEST);
+
+        //--------------- light ----------------------
         lightShader.use();
         //model = glm::mat4(1.0f);
         view = glm::mat4(1.0f);
@@ -267,6 +305,9 @@ return -1;
         lightShader.setMatrix4fv("projection", 1, projection);
         glBindVertexArray(lightVAO);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xff);
+        glStencilMask(0x00);
 
         for (unsigned int i = 0; i < 4; i++)
         {

@@ -145,6 +145,8 @@
   <ItemGroup>
     <None Include="colorCube.fs" />
     <None Include="colorCube.vs" />
+    <None Include="frame.fs" />
+    <None Include="frame.vs" />
     <None Include="light.fs" />
     <None Include="light.vs" />
     <None Include="multiple_light.fs" />

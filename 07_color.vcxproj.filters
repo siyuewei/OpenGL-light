@@ -52,6 +52,8 @@
     <None Include="light.fs" />
     <None Include="multiple_light.vs" />
     <None Include="multiple_light.fs" />
+    <None Include="frame.vs" />
+    <None Include="frame.fs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertices_p.txt" />
