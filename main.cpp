@@ -90,6 +90,12 @@ return -1;
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+    //只对箱子做面剔除，写在了render里面
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
+
+
     //2.Shader
     Shader colorCubeShader = Shader("multiple_light.vs", "multiple_light.fs");
     Shader lightShader = Shader("light.vs", "light.fs");
@@ -293,6 +299,11 @@ return -1;
         glStencilMask(0xff);
 
         glBindVertexArray(colorCubeVAO);
+        //开启面剔除会变得很抽象，因为这里修改物理的位置是通过乘model,view,projection三个矩阵，物体的位置点没有变化
+        // 面剔除似乎不能正确应对
+        //glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CW);
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
@@ -301,6 +312,8 @@ return -1;
             colorCubeShader.setMatrix4fv("model", 1, model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        glDisable(GL_CULL_FACE);
+
 
         // ------------------ frame ---------------------
         frameShader.use();
@@ -314,6 +327,8 @@ return -1;
         //glDisable(GL_DEPTH_TEST);
 
         float scale = 1.1f;
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
@@ -321,8 +336,10 @@ return -1;
             float angle = 20.0f * i;
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
             frameShader.setMatrix4fv("model", 1, model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        glDisable(GL_CULL_FACE);
+
         //glEnable(GL_DEPTH_TEST);
 
         //--------------- light ----------------------
@@ -351,7 +368,7 @@ return -1;
             model = glm::translate(model, pointLightPositions[i]);
             model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
             lightShader.setMatrix4fv("model",1,model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
 
@@ -381,7 +398,7 @@ return -1;
             model = glm::mat4(1.0f);
             model = glm::translate(model, it->second);
             transportShader.setMatrix4fv("model",1, model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
         glfwSwapBuffers(window);
