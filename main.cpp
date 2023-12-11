@@ -301,9 +301,9 @@ return -1;
         glBindVertexArray(colorCubeVAO);
         //开启面剔除会变得很抽象，因为这里修改物理的位置是通过乘model,view,projection三个矩阵，物体的位置点没有变化
         // 面剔除似乎不能正确应对
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        glFrontFace(GL_CW);
+        //glFrontFace(GL_CW);
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
