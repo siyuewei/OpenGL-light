@@ -191,7 +191,7 @@ return -1;
     colorCubeShader.setInt("material.emission", 2);
 
     transportShader.use();
-    transportShader.setInt("texture1", 3);
+    transportShader.setInt("texture1", 0);
 
     screenShader.use();
     screenShader.setInt("screenTexture", 0);
@@ -417,7 +417,7 @@ return -1;
         glStencilMask(0x00);
         
         glBindVertexArray(transparentVAO);
-        glActiveTexture(GL_TEXTURE3);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tranparentMap);
         std::map<float, glm::vec3> sorted;
         for (unsigned int i = 0; i < windows.size(); i++)
