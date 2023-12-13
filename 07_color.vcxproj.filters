@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="资源文件\photo">
+      <UniqueIdentifier>{844acd8f-2f00-4565-94fc-9ad621659e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader">
+      <UniqueIdentifier>{1307a5b9-23dd-484c-8953-45dca5e187c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\vertices">
+      <UniqueIdentifier>{7fa70e38-2182-4346-b2d4-0c5cab1d3ce9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -46,36 +55,75 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="colorCube.fs" />
-    <None Include="colorCube.vs" />
-    <None Include="light.vs" />
-    <None Include="light.fs" />
-    <None Include="multiple_light.vs" />
-    <None Include="multiple_light.fs" />
-    <None Include="frame.vs" />
-    <None Include="frame.fs" />
-    <None Include="transparent.vs" />
-    <None Include="transparent.fs" />
+    <None Include="shader\colorCube.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\colorCube.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\frame.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\frame.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\light.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\light.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\multiple_light.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\multiple_light.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\screen.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\screen.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\transparent.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\transparent.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="vertices_p.txt" />
-    <Text Include="vertices_pn.txt" />
-    <Text Include="vertices_pnt.txt" />
-    <Text Include="10_box.txt" />
-    <Text Include="window.txt" />
+    <Image Include="photo\blending_transparent_window.png">
+      <Filter>资源文件\photo</Filter>
+    </Image>
+    <Image Include="photo\container2.png">
+      <Filter>资源文件\photo</Filter>
+    </Image>
+    <Image Include="photo\container2_specular.png">
+      <Filter>资源文件\photo</Filter>
+    </Image>
+    <Image Include="photo\matrix.jpg">
+      <Filter>资源文件\photo</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="container2.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="container2_specular.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="matrix.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="blending_transparent_window.png">
-      <Filter>资源文件</Filter>
-    </Image>
+    <Text Include="vertices\10_box.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\quadVertices.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\vertices_p.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\vertices_pn.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\vertices_pnt.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\window.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
   </ItemGroup>
 </Project>

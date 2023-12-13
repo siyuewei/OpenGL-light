@@ -143,29 +143,32 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="colorCube.fs" />
-    <None Include="colorCube.vs" />
-    <None Include="frame.fs" />
-    <None Include="frame.vs" />
-    <None Include="light.fs" />
-    <None Include="light.vs" />
-    <None Include="multiple_light.fs" />
-    <None Include="multiple_light.vs" />
-    <None Include="transparent.fs" />
-    <None Include="transparent.vs" />
+    <None Include="shader\colorCube.fs" />
+    <None Include="shader\colorCube.vs" />
+    <None Include="shader\frame.fs" />
+    <None Include="shader\frame.vs" />
+    <None Include="shader\light.fs" />
+    <None Include="shader\light.vs" />
+    <None Include="shader\multiple_light.fs" />
+    <None Include="shader\multiple_light.vs" />
+    <None Include="shader\screen.fs" />
+    <None Include="shader\screen.vs" />
+    <None Include="shader\transparent.fs" />
+    <None Include="shader\transparent.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="10_box.txt" />
-    <Text Include="vertices_pnt.txt" />
-    <Text Include="vertices_p.txt" />
-    <Text Include="vertices_pn.txt" />
-    <Text Include="window.txt" />
+    <Image Include="photo\blending_transparent_window.png" />
+    <Image Include="photo\container2.png" />
+    <Image Include="photo\container2_specular.png" />
+    <Image Include="photo\matrix.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="blending_transparent_window.png" />
-    <Image Include="container2.png" />
-    <Image Include="container2_specular.png" />
-    <Image Include="matrix.jpg" />
+    <Text Include="vertices\10_box.txt" />
+    <Text Include="vertices\quadVertices.txt" />
+    <Text Include="vertices\vertices_p.txt" />
+    <Text Include="vertices\vertices_pn.txt" />
+    <Text Include="vertices\vertices_pnt.txt" />
+    <Text Include="vertices\window.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
