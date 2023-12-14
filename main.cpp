@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -10,6 +8,7 @@
 #include "shader.h"
 #include "Camera.h"
 #include "utils.h"
+#include "model.h"
 
 #include <iostream>
 #include <vector>
@@ -195,6 +194,10 @@ return -1;
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
+
+    // ----------------------------- model --------------------
+    Model ourModel("model/nanosuit_reflection/nanosuit.obj");
+
     //Texture
     unsigned int diffuseMap = loadTexture("photo/container2.png");
     unsigned int specularMap = loadTexture("photo/container2_specular.png");
@@ -228,10 +231,10 @@ return -1;
     skyboxShader.setInt("skybox", 0);
 
     reflectShader.use();
-    reflectShader.setInt("skybox", 0);
+    reflectShader.setInt("skybox", 3);
 
     refractShader.use();
-    refractShader.setInt("skybox", 0);
+    refractShader.setInt("skybox", 3);
 
 
     // -------------------------- framebuffer ----------------------
@@ -377,32 +380,6 @@ return -1;
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
-
-        // *** reflect *** 
-        reflectShader.use();
-        model = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        reflectShader.setMatrix4fv("model",1, model);
-        reflectShader.setMatrix4fv("view",1, view);
-        reflectShader.setMatrix4fv("projection", 1,projection);
-        reflectShader.setFloatVec3("cameraPos",camera.getPosition());
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-
-        // *** refract ***
-        //refractShader.use();
-        //model = glm::mat4(1.0f);
-        //view = camera.GetViewMatrix();
-        //projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        //refractShader.setMatrix4fv("model",1, model);
-        //refractShader.setMatrix4fv("view",1, view);
-        //refractShader.setMatrix4fv("projection", 1,projection);
-        //refractShader.setFloatVec3("cameraPos",camera.getPosition());
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-
-
         glStencilFunc(GL_ALWAYS, 1, 0xff);
         glStencilMask(0xff);
 
@@ -415,10 +392,36 @@ return -1;
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
-            reflectShader.setMatrix4fv("model", 1, model);
+            colorCubeShader.setMatrix4fv("model", 1, model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         glDisable(GL_CULL_FACE);
+
+        // *** reflect *** 
+        reflectShader.use();
+        model = glm::mat4(1.0f);
+        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        reflectShader.setMatrix4fv("model", 1, model);
+        reflectShader.setMatrix4fv("view", 1, view);
+        reflectShader.setMatrix4fv("projection", 1, projection);
+        reflectShader.setFloatVec3("cameraPos", camera.getPosition());
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        ourModel.Draw(reflectShader);
+
+
+        // *** refract ***
+        //refractShader.use();
+        //model = glm::mat4(1.0f);
+        //view = camera.GetViewMatrix();
+        //projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //refractShader.setMatrix4fv("model", 1, model);
+        //refractShader.setMatrix4fv("view", 1, view);
+        //refractShader.setMatrix4fv("projection", 1, projection);
+        //refractShader.setFloatVec3("cameraPos", camera.getPosition());
+        //glActiveTexture(GL_TEXTURE1);
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
 
         // ------------------ frame ---------------------
