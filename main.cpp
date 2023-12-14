@@ -95,6 +95,11 @@ return -1;
     Shader frameShader = Shader("shader/frame.vs", "shader/frame.fs");
     Shader transportShader = Shader("shader/transparent.vs", "shader/transparent.fs");
     Shader screenShader = Shader("shader/screen.vs", "shader/screen.fs");
+    Shader skyboxShader("shader/skybox.vs", "shader/skybox.fs");
+    Shader reflectShader("shader/reflect.vs", "shader/reflect.fs");
+    Shader refractShader("shader/refract.vs", "shader/refract.fs");
+
+
     //3.data
     // positions of the point lights
     glm::vec3 pointLightPositions[] = {
@@ -179,22 +184,54 @@ return -1;
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
+    // -------------------- sky box ----------------------------------
+    std::vector<float> vertices_sky_box = ReadVerticesFromFile("vertices/skybox.txt");
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices_sky_box.size() * sizeof(float),&vertices_sky_box[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
     //Texture
     unsigned int diffuseMap = loadTexture("photo/container2.png");
     unsigned int specularMap = loadTexture("photo/container2_specular.png");
     unsigned int emissionMap = loadTexture("photo/matrix.jpg");
     unsigned int tranparentMap = loadTexture("photo/blending_transparent_window.png");
-
+    std::vector<std::string> faces
+    {
+        "photo/skybox/right.jpg",
+        "photo/skybox/left.jpg",
+        "photo/skybox/top.jpg",
+        "photo/skybox/bottom.jpg",
+        "photo/skybox/front.jpg",
+        "photo/skybox/back.jpg"
+    };
+    unsigned int cubemapTexture = loadCubemap(faces);
+    
     colorCubeShader.use();
     colorCubeShader.setInt("material.diffuse", 0);
     colorCubeShader.setInt("material.specular", 1);
     colorCubeShader.setInt("material.emission", 2);
+    colorCubeShader.setInt("skybox", 3);
+
 
     transportShader.use();
     transportShader.setInt("texture1", 0);
 
     screenShader.use();
     screenShader.setInt("screenTexture", 0);
+
+    skyboxShader.use();
+    skyboxShader.setInt("skybox", 0);
+
+    reflectShader.use();
+    reflectShader.setInt("skybox", 0);
+
+    refractShader.use();
+    refractShader.setInt("skybox", 0);
 
 
     // -------------------------- framebuffer ----------------------
@@ -336,6 +373,36 @@ return -1;
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, emissionMap);
 
+        colorCubeShader.setFloatVec3("cameraPos", camera.getPosition());
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+
+        // *** reflect *** 
+        reflectShader.use();
+        model = glm::mat4(1.0f);
+        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        reflectShader.setMatrix4fv("model",1, model);
+        reflectShader.setMatrix4fv("view",1, view);
+        reflectShader.setMatrix4fv("projection", 1,projection);
+        reflectShader.setFloatVec3("cameraPos",camera.getPosition());
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+        // *** refract ***
+        //refractShader.use();
+        //model = glm::mat4(1.0f);
+        //view = camera.GetViewMatrix();
+        //projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //refractShader.setMatrix4fv("model",1, model);
+        //refractShader.setMatrix4fv("view",1, view);
+        //refractShader.setMatrix4fv("projection", 1,projection);
+        //refractShader.setFloatVec3("cameraPos",camera.getPosition());
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+
         glStencilFunc(GL_ALWAYS, 1, 0xff);
         glStencilMask(0xff);
 
@@ -348,7 +415,7 @@ return -1;
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
-            colorCubeShader.setMatrix4fv("model", 1, model);
+            reflectShader.setMatrix4fv("model", 1, model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         glDisable(GL_CULL_FACE);
@@ -432,6 +499,24 @@ return -1;
             transportShader.setMatrix4fv("model",1, model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
+
+
+        // ----------------------- skybox cube -------------------------
+        // draw skybox as last
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        skyboxShader.use();
+        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+        //view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        skyboxShader.setMatrix4fv("view",1, view);
+        skyboxShader.setMatrix4fv("projection",1, projection);
+        // skybox cube
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS); // set depth function back to default
 
         
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

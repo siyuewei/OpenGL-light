@@ -8,5 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <vector>
 
 unsigned int loadTexture(char const * file_path);
+unsigned int loadCubemap(std::vector<std::string> faces);

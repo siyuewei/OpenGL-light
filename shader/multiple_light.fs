@@ -61,6 +61,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 uniform float emission_move;
 
+uniform vec3 cameraPos;
+uniform samplerCube skybox;
 
 void main()
 {
@@ -79,6 +81,22 @@ void main()
     //加入自发光会影响光照的观察，因为太亮了。乘0.01基本看不见自发光了。
 	vec3 emission = texture(material.emission,vec2(TexCoords.x,TexCoords.y + emission_move)).rgb;
     result += emission;
+
+
+    vec3 I;
+    vec3 R;
+    //reflect
+    I = normalize(FragPos - cameraPos);
+    R = reflect(I, normalize(Normal));
+    vec3 reflectColor = texture(skybox, R).rgb;
+    result += reflectColor;
+
+    //refract
+//    float ratio = 1.00 / 1.52;
+//    I = normalize(FragPos - cameraPos);
+//    R = refract(I, normalize(Normal), ratio);
+//    vec3 refractColor = texture(skybox, R).rgb;
+//    result += refractColor;
 
     FragColor = vec4(result ,1.0f);
 }

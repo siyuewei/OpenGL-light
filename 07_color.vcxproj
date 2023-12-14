@@ -151,8 +151,14 @@
     <None Include="shader\light.vs" />
     <None Include="shader\multiple_light.fs" />
     <None Include="shader\multiple_light.vs" />
+    <None Include="shader\reflect.fs" />
+    <None Include="shader\reflect.vs" />
+    <None Include="shader\refract.fs" />
+    <None Include="shader\refract.vs" />
     <None Include="shader\screen.fs" />
     <None Include="shader\screen.vs" />
+    <None Include="shader\skybox.fs" />
+    <None Include="shader\skybox.vs" />
     <None Include="shader\transparent.fs" />
     <None Include="shader\transparent.vs" />
   </ItemGroup>
@@ -161,10 +167,17 @@
     <Image Include="photo\container2.png" />
     <Image Include="photo\container2_specular.png" />
     <Image Include="photo\matrix.jpg" />
+    <Image Include="photo\skybox\back.jpg" />
+    <Image Include="photo\skybox\bottom.jpg" />
+    <Image Include="photo\skybox\front.jpg" />
+    <Image Include="photo\skybox\left.jpg" />
+    <Image Include="photo\skybox\right.jpg" />
+    <Image Include="photo\skybox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertices\10_box.txt" />
     <Text Include="vertices\quadVertices.txt" />
+    <Text Include="vertices\skybox.txt" />
     <Text Include="vertices\vertices_p.txt" />
     <Text Include="vertices\vertices_pn.txt" />
     <Text Include="vertices\vertices_pnt.txt" />

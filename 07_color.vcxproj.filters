@@ -22,6 +22,9 @@
     <Filter Include="资源文件\vertices">
       <UniqueIdentifier>{7fa70e38-2182-4346-b2d4-0c5cab1d3ce9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\photo\skybox">
+      <UniqueIdentifier>{b53f82cb-135a-4b20-9a23-cafa933bab1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -91,6 +94,24 @@
     <None Include="shader\transparent.vs">
       <Filter>资源文件\shader</Filter>
     </None>
+    <None Include="shader\skybox.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\skybox.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\reflect.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\reflect.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\refract.fs">
+      <Filter>资源文件\shader</Filter>
+    </None>
+    <None Include="shader\refract.vs">
+      <Filter>资源文件\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="photo\blending_transparent_window.png">
@@ -104,6 +125,24 @@
     </Image>
     <Image Include="photo\matrix.jpg">
       <Filter>资源文件\photo</Filter>
+    </Image>
+    <Image Include="photo\skybox\back.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
+    </Image>
+    <Image Include="photo\skybox\bottom.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
+    </Image>
+    <Image Include="photo\skybox\front.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
+    </Image>
+    <Image Include="photo\skybox\left.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
+    </Image>
+    <Image Include="photo\skybox\right.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
+    </Image>
+    <Image Include="photo\skybox\top.jpg">
+      <Filter>资源文件\photo\skybox</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +162,9 @@
       <Filter>资源文件\vertices</Filter>
     </Text>
     <Text Include="vertices\window.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\skybox.txt">
       <Filter>资源文件\vertices</Filter>
     </Text>
   </ItemGroup>
