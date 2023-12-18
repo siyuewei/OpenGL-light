@@ -167,6 +167,19 @@ void Shader::setMatrix4fv(const std::string& name, unsigned count, glm::mat4 val
     }
 }
 
+void Shader::bindUniformBlock(const std::string& name, unsigned int bind_point)
+{
+    unsigned int uniformBlockIndex = glGetUniformBlockIndex(ID, name.c_str());
+    if (uniformBlockIndex != GL_INVALID_INDEX) {
+        glUniformBlockBinding(ID, uniformBlockIndex, bind_point);
+    }
+    else {
+        std::cout << "Fail to find uniform block " << name << std::endl;
+    }
+}
+
+
+
 void Shader::checkCompileErrors(unsigned int shader, std::string type) 
 {
     GLint success;

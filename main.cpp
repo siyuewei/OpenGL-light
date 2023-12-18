@@ -269,6 +269,24 @@ return -1;
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture, 0);*/
 
+
+    /* ---------------- uniform buffer ------------- */
+    unsigned int uboMatrices;
+    glGenBuffers(1, &uboMatrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    // define the range of the buffer that links to a uniform binding point
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+    colorCubeShader.bindUniformBlock("Matrices", 0);
+    lightShader.bindUniformBlock("Matrices", 0);
+    frameShader.bindUniformBlock("Matrices", 0);
+    transportShader.bindUniformBlock("Matrices", 0);
+    skyboxShader.bindUniformBlock("Matrices", 0);
+    reflectShader.bindUniformBlock("Matrices", 0);
+    refractShader.bindUniformBlock("Matrices", 0);
+
     //4.render loop
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -300,6 +318,14 @@ return -1;
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
+
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        view = camera.GetViewMatrix();
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         //---------------------- colorCube ------------------------------------
         colorCubeShader.use();
@@ -360,15 +386,6 @@ return -1;
         colorCubeShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
         colorCubeShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-        model = glm::mat4(1.0f);
-        view = glm::mat4(1.0f);
-        projection = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        colorCubeShader.setMatrix4fv("model", 1, model);
-        colorCubeShader.setMatrix4fv("view", 1, view);
-        colorCubeShader.setMatrix4fv("projection", 1, projection);
-
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
         glActiveTexture(GL_TEXTURE1);
@@ -386,8 +403,8 @@ return -1;
         glBindVertexArray(colorCubeVAO);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        //glFrontFace(GL_CW);
-        for (unsigned int i = 0; i < 10; i++) {
+        glFrontFace(GL_CW);
+        for (unsigned int i = 0; i < 1; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
@@ -400,11 +417,7 @@ return -1;
         // *** reflect *** 
         reflectShader.use();
         model = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         reflectShader.setMatrix4fv("model", 1, model);
-        reflectShader.setMatrix4fv("view", 1, view);
-        reflectShader.setMatrix4fv("projection", 1, projection);
         reflectShader.setFloatVec3("cameraPos", camera.getPosition());
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
@@ -426,10 +439,6 @@ return -1;
 
         // ------------------ frame ---------------------
         frameShader.use();
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        frameShader.setMatrix4fv("view", 1, view);
-        frameShader.setMatrix4fv("projection", 1, projection);
 
         glStencilFunc(GL_NOTEQUAL, 1, 0xff);
         glStencilMask(0x00);
@@ -438,28 +447,22 @@ return -1;
         float scale = 1.1f;
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        for (unsigned int i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            model = glm::scale(model, glm::vec3(scale, scale, scale));
-            float angle = 20.0f * i;
-            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
-            frameShader.setMatrix4fv("model", 1, model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        glBindVertexArray(colorCubeVAO);
+        //for (unsigned int i = 0; i < 10; i++) {
+        //    glm::mat4 model = glm::mat4(1.0f);
+        //    model = glm::translate(model, cubePositions[i]);
+        //    model = glm::scale(model, glm::vec3(scale, scale, scale));
+        //    float angle = 20.0f * i;
+        //    model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5));
+        //    frameShader.setMatrix4fv("model", 1, model);
+        //    glDrawArrays(GL_TRIANGLES, 0, 36);
+        //}
         glDisable(GL_CULL_FACE);
 
 
         //--------------- light ----------------------
         lightShader.use();
-        view = glm::mat4(1.0f);
-        projection = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        lightShader.setMatrix4fv("view", 1, view);
-        lightShader.setMatrix4fv("projection", 1, projection);
         glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glStencilFunc(GL_ALWAYS, 1, 0xff);
         glStencilMask(0x00);
@@ -476,12 +479,6 @@ return -1;
 
         // ---------------- windows (from furthest to nearest) --------------------------
         transportShader.use();
-        view = glm::mat4(1.0f);
-        projection = glm::mat4(1.0f);
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        transportShader.setMatrix4fv("view", 1, view);
-        transportShader.setMatrix4fv("projection", 1, projection);
 
         glStencilFunc(GL_ALWAYS, 1, 0xff);
         glStencilMask(0x00);
@@ -508,11 +505,6 @@ return -1;
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
-        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-        //view = camera.GetViewMatrix();
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        skyboxShader.setMatrix4fv("view",1, view);
-        skyboxShader.setMatrix4fv("projection",1, projection);
         // skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);

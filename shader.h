@@ -33,6 +33,8 @@ public:
     void setFloat4Array(const std::string& name, unsigned count, float* value) const;
     void setMatrix4fv(const std::string& name, unsigned count, glm::mat4 value) const;
 
+    void bindUniformBlock(const std::string& name,unsigned int bind_point);
+
 private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------
