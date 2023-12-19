@@ -25,6 +25,24 @@
     <Filter Include="资源文件\photo\skybox">
       <UniqueIdentifier>{b53f82cb-135a-4b20-9a23-cafa933bab1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\shader\light">
+      <UniqueIdentifier>{f1c1c645-d3fe-40f5-aae1-267e74fb36e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader\geo">
+      <UniqueIdentifier>{d38aa978-397a-44eb-9dfb-5a8c07b87255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader\stencil">
+      <UniqueIdentifier>{674c4cdc-b458-4a15-b625-730a3914def7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader\box">
+      <UniqueIdentifier>{f0cf2846-bd8c-4d16-9f8d-7d40c7924a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader\window">
+      <UniqueIdentifier>{69cd2765-a875-439a-bce0-3e1a4dd6a58c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shader\reflect">
+      <UniqueIdentifier>{1b1589d6-c694-4eba-9fe2-5a9f4b3354fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -71,58 +89,85 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\colorCube.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
     </None>
     <None Include="shader\colorCube.vs">
-      <Filter>资源文件\shader</Filter>
-    </None>
-    <None Include="shader\frame.fs">
-      <Filter>资源文件\shader</Filter>
-    </None>
-    <None Include="shader\frame.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
     </None>
     <None Include="shader\light.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
     </None>
     <None Include="shader\light.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
     </None>
     <None Include="shader\multiple_light.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
     </None>
     <None Include="shader\multiple_light.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\light</Filter>
+    </None>
+    <None Include="shader\house.fs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\house.gs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\house.vs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\frame.fs">
+      <Filter>资源文件\shader\stencil</Filter>
+    </None>
+    <None Include="shader\frame.vs">
+      <Filter>资源文件\shader\stencil</Filter>
     </None>
     <None Include="shader\screen.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\box</Filter>
     </None>
     <None Include="shader\screen.vs">
-      <Filter>资源文件\shader</Filter>
-    </None>
-    <None Include="shader\transparent.fs">
-      <Filter>资源文件\shader</Filter>
-    </None>
-    <None Include="shader\transparent.vs">
-      <Filter>资源文件\shader</Filter>
-    </None>
-    <None Include="shader\skybox.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\box</Filter>
     </None>
     <None Include="shader\skybox.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\box</Filter>
+    </None>
+    <None Include="shader\skybox.fs">
+      <Filter>资源文件\shader\box</Filter>
+    </None>
+    <None Include="shader\transparent.fs">
+      <Filter>资源文件\shader\window</Filter>
+    </None>
+    <None Include="shader\transparent.vs">
+      <Filter>资源文件\shader\window</Filter>
     </None>
     <None Include="shader\reflect.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\reflect</Filter>
     </None>
     <None Include="shader\reflect.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\reflect</Filter>
     </None>
     <None Include="shader\refract.fs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\reflect</Filter>
     </None>
     <None Include="shader\refract.vs">
-      <Filter>资源文件\shader</Filter>
+      <Filter>资源文件\shader\reflect</Filter>
+    </None>
+    <None Include="shader\explode.fs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\explode.gs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\explode.vs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\normal_visual.fs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\normal_visual.gs">
+      <Filter>资源文件\shader\geo</Filter>
+    </None>
+    <None Include="shader\normal_visual.vs">
+      <Filter>资源文件\shader\geo</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +222,9 @@
       <Filter>资源文件\vertices</Filter>
     </Text>
     <Text Include="vertices\skybox.txt">
+      <Filter>资源文件\vertices</Filter>
+    </Text>
+    <Text Include="vertices\house.txt">
       <Filter>资源文件\vertices</Filter>
     </Text>
   </ItemGroup>

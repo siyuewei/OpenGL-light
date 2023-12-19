@@ -149,12 +149,21 @@
   <ItemGroup>
     <None Include="shader\colorCube.fs" />
     <None Include="shader\colorCube.vs" />
+    <None Include="shader\explode.fs" />
+    <None Include="shader\explode.gs" />
+    <None Include="shader\explode.vs" />
     <None Include="shader\frame.fs" />
     <None Include="shader\frame.vs" />
+    <None Include="shader\house.fs" />
+    <None Include="shader\house.gs" />
+    <None Include="shader\house.vs" />
     <None Include="shader\light.fs" />
     <None Include="shader\light.vs" />
     <None Include="shader\multiple_light.fs" />
     <None Include="shader\multiple_light.vs" />
+    <None Include="shader\normal_visual.fs" />
+    <None Include="shader\normal_visual.gs" />
+    <None Include="shader\normal_visual.vs" />
     <None Include="shader\reflect.fs" />
     <None Include="shader\reflect.vs" />
     <None Include="shader\refract.fs" />
@@ -180,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertices\10_box.txt" />
+    <Text Include="vertices\house.txt" />
     <Text Include="vertices\quadVertices.txt" />
     <Text Include="vertices\skybox.txt" />
     <Text Include="vertices\vertices_p.txt" />

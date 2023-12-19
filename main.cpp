@@ -74,19 +74,12 @@ return -1;
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-std::cout << "Failed to initialize GLAD" << std::endl;
-return -1;
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
     }
 
     // configure global opengl state
     // -----------------------------
-
-
-
-    //只对箱子做面剔除，写在了render里面
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
-
 
     //2.Shader
     Shader colorCubeShader = Shader("shader/multiple_light.vs", "shader/multiple_light.fs");
@@ -97,6 +90,9 @@ return -1;
     Shader skyboxShader("shader/skybox.vs", "shader/skybox.fs");
     Shader reflectShader("shader/reflect.vs", "shader/reflect.fs");
     Shader refractShader("shader/refract.vs", "shader/refract.fs");
+    Shader houseShader("shader/house.vs", "shader/house.fs", "shader/house.gs");
+    Shader explodeShader("shader/explode.vs", "shader/explode.fs", "shader/explode.gs");
+    Shader normalVisualShader("shader/normal_visual.vs", "shader/normal_visual.fs", "shader/normal_visual.gs");
 
 
     //3.data
@@ -194,6 +190,21 @@ return -1;
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
+    // -------------------------- house (几何着色器) --------------------
+    std::vector<float> vertices_house = ReadVerticesFromFile("vertices/house.txt");
+    unsigned int houseVAO, houseVBO;
+    glGenVertexArrays(1, &houseVAO);
+    glGenBuffers(1, &houseVBO);
+    glBindVertexArray(houseVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, houseVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices_house.size() * sizeof(float), &vertices_house[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    glBindVertexArray(0);
+
+
 
     // ----------------------------- model --------------------
     Model ourModel("model/nanosuit_reflection/nanosuit.obj");
@@ -286,6 +297,7 @@ return -1;
     skyboxShader.bindUniformBlock("Matrices", 0);
     reflectShader.bindUniformBlock("Matrices", 0);
     refractShader.bindUniformBlock("Matrices", 0);
+    explodeShader.bindUniformBlock("Matrices", 0);
 
     //4.render loop
     while (!glfwWindowShouldClose(window)) {
@@ -423,6 +435,18 @@ return -1;
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         ourModel.Draw(reflectShader);
 
+        explodeShader.use();
+        explodeShader.setMatrix4fv("model", 1, model);
+        explodeShader.setFloat("time", static_cast<float>(glfwGetTime()));
+        ourModel.Draw(explodeShader);
+
+        normalVisualShader.use();
+        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        normalVisualShader.setMatrix4fv("view", 1, view);
+        normalVisualShader.setMatrix4fv("projection", 1, projection);
+        normalVisualShader.setMatrix4fv("model", 1, model);
+        ourModel.Draw(normalVisualShader);
 
         // *** refract ***
         //refractShader.use();
@@ -500,6 +524,13 @@ return -1;
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
+        // ------------------------- house -----------------------
+        //houseShader.use();
+        //glStencilFunc(GL_ALWAYS, 1, 0xff);
+        //glStencilMask(0x00);
+        //glBindVertexArray(houseVAO);
+        //glDrawArrays(GL_POINTS, 0, 4);
+
 
         // ----------------------- skybox cube -------------------------
         // draw skybox as last
@@ -512,6 +543,7 @@ return -1;
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
+
 
         
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
